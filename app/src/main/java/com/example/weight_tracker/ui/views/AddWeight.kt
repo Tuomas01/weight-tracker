@@ -20,6 +20,7 @@ import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -42,6 +43,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddWeight(viewModel: WeightViewModel) {
+    // Variables for getting the current date
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
@@ -49,6 +51,17 @@ fun AddWeight(viewModel: WeightViewModel) {
 
     var weight by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("$day/$month/$year") }
+    var showDatePicker = viewModel.openPopUp.value
+
+    // Check the viewModel's openPopUp value, if it's true show the DatePicker composable to the user
+    if (showDatePicker) {
+        // DatePicker takes 2 parameters, viewModel and
+        // onDateSelected function, which gets the selected date as "it" and assigns it to the date variable
+        DatePicker(
+            viewModel,
+            onDateSelected = { date = it }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -68,11 +81,15 @@ fun AddWeight(viewModel: WeightViewModel) {
                 onValueChange = { date = it },
                 label = { Text("Date") }
             )
-            Icon(
-                Icons.Default.DateRange,
-                contentDescription = "Calendar",
-                modifier = Modifier.padding(horizontal = 8.dp),
-            )
+            // Icon that functions like a button
+            // onClick change the viewModel's openPopUp value to true to open the DatePicker composable
+            IconButton(onClick = { viewModel.isOpen() }) {
+                Icon(
+                    Icons.Default.DateRange,
+                    contentDescription = "Calendar",
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+            }
         }
     }
 

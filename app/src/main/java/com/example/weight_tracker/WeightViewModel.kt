@@ -34,10 +34,6 @@ class WeightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun isOpen() {
-        if (!openPopUp.value) {
-            openPopUp.value = true
-        } else {
-            openPopUp.value = false
-        }
+        openPopUp.value = !openPopUp.value
     }
 }

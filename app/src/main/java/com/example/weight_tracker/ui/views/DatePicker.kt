@@ -24,48 +24,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.weight_tracker.WeightViewModel
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePicker(viewModel: WeightViewModel) {
+fun DatePicker(
+    viewModel: WeightViewModel,
+    onDateSelected: (String) -> Unit
+) {
     val datePickerState =
         rememberDatePickerState(initialDisplayMode = DisplayMode.Input)
     val openPopUp = viewModel.openPopUp.value
-    if (openPopUp) {
-        DatePickerDialog(
-            modifier = Modifier.fillMaxSize(),
-            onDismissRequest = { /*TODO*/ },
-            dismissButton = {
-                Button(
-                    onClick = { viewModel.isOpen() },
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    Text("Close")
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.isOpen()
-                        println(":DDD ${datePickerState.selectedDateMillis}")
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .padding(end = 24.dp)
-                ) {
-                    Text("Add weight")
-                }
-            },
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.verticalScroll(rememberScrollState())
+    // Change the DatePicker's selected value from Long to a Date type that uses the device's locale
+    val selectedDate = datePickerState.selectedDateMillis?.let {
+        DateFormat.getDateInstance().format(it)
+    } ?: ""
+    DatePickerDialog(
+        modifier = Modifier.fillMaxSize(),
+        onDismissRequest = { /*TODO*/ },
+        dismissButton = {
+            Button(
+                onClick = { viewModel.isOpen() },
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                DatePicker(
-                    state = datePickerState,
-                    dateFormatter = remember { DatePickerDefaults.dateFormatter() },
-                )
+                Text("Close")
             }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    viewModel.isOpen()
+                    onDateSelected(selectedDate)
+                    println(":DDD ${datePickerState.selectedDateMillis}, isOpen value: $openPopUp, selectedDate: $selectedDate")
+                },
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .padding(end = 24.dp)
+            ) {
+                Text("Add weight")
+            }
+        },
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            DatePicker(
+                state = datePickerState,
+                dateFormatter = remember { DatePickerDefaults.dateFormatter() },
+            )
         }
     }
 }
