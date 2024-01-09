@@ -13,6 +13,7 @@ import com.example.weight_tracker.database.Weight
 import com.example.weight_tracker.database.WeightDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class WeightViewModel(application: Application) : AndroidViewModel(application) {
     private val db = WeightDatabase.getDatabase(application)
@@ -24,11 +25,11 @@ class WeightViewModel(application: Application) : AndroidViewModel(application) 
         return weights.asLiveData()
     }
 
-    fun updateWeight(weight: Int, date: Long, id: Int) {
+    fun updateWeight(weight: Int, date: Date, id: Int) {
         viewModelScope.launch { weightDao.updateSelectedWeight(weight, date, id) }
     }
 
-    fun addWeight(weight: Int, date: Long) {
+    fun addWeight(weight: Int, date: Date) {
         val newWeight = Weight(0, weight, date)
         viewModelScope.launch { weightDao.addNewWeight(newWeight) }
     }

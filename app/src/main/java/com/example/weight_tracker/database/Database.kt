@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.example.weight_tracker.MyApp
 
-@Database(entities = [Weight::class], version = 2)
+@Database(entities = [Weight::class], version = 3)
+@TypeConverters(Converters::class)
 abstract class WeightDatabase : RoomDatabase() {
     abstract fun weightDao(): WeightDao
 

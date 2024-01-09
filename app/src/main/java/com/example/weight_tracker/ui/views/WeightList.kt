@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.weight_tracker.WeightViewModel
+import java.text.SimpleDateFormat
 
 @Composable
 fun WeightList(model: WeightViewModel, navController: NavController) {
     val weights = model.getAllWeights().observeAsState(listOf())
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy")
     LazyColumn {
         item {
             Text(
@@ -33,7 +35,7 @@ fun WeightList(model: WeightViewModel, navController: NavController) {
             )
         }
         items(weights.value) {
-            Text("${it.date}: ${it.weight}")
+            Text("${dateFormat.format(it.date)}: ${it.weight} kg")
         }
     }
     Row(
