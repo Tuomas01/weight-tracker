@@ -1,5 +1,6 @@
 package com.example.weight_tracker.ui.views
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -23,14 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.weight_tracker.MyApp
 import com.example.weight_tracker.WeightViewModel
-import java.lang.Exception
+import java.lang.NumberFormatException
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
+import kotlin.Exception
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
     // Variables for getting the current date
@@ -41,7 +41,7 @@ fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
 
     var weight by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("$day.$month.$year") }
-    var showDatePicker = viewModel.openPopUp.value
+    val showDatePicker = viewModel.openPopUp.value
 
     // Check the viewModel's openPopUp value, if it's true show the DatePicker composable to the user
     if (showDatePicker) {
@@ -61,7 +61,7 @@ fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
         OutlinedTextField(
             value = weight,
             onValueChange = { weight = it },
-            label = { Text("Weight (kg)") }
+            label = { Text("Weight") }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -69,7 +69,7 @@ fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
             OutlinedTextField(
                 value = date,
                 onValueChange = { date = it },
-                label = { Text("Date") }
+                label = { Text("Date (dd.mm.yyyy)") }
             )
             // Icon that functions like a button
             // onClick change the viewModel's openPopUp value to true to open the DatePicker composable
@@ -89,14 +89,29 @@ fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
         ) {
             Button(
                 onClick = {
-                    navController.navigate("weightlist")
                     val formattedDate = stringToDate(date)
-                    println(":DD $formattedDate")
-                    if (formattedDate != null) {
-                        println(":DDD not null")
-                        viewModel.addWeight(weight.toInt(), formattedDate)
+                    try {
+                        println(":DD $formattedDate weight: ${weight.toInt()}")
+                        if (formattedDate != null) {
+                            viewModel.addWeight(weight.toInt(), formattedDate)
+                            navController.navigate("weightlist")
+                        } else {
+                            Toast.makeText(
+                                MyApp.appContext,
+                                "Please use this format when filling in the date: dd.mm.yyyy",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        println("Error on adding weight: $e")
+                        if (e is NumberFormatException) {
+                            Toast.makeText(
+                                MyApp.appContext,
+                                "Please use only numbers to add weight",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-
                 }
             ) {
                 Row(
