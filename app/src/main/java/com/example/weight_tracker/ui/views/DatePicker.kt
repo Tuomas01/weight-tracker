@@ -63,7 +63,7 @@ fun DatePicker(
                     .padding(vertical = 8.dp)
                     .padding(end = 24.dp)
             ) {
-                Text("Add weight")
+                Text("Add date")
             }
         },
     ) {

@@ -6,24 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,18 +21,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.weight_tracker.WeightViewModel
-import java.time.LocalDate
+import java.lang.Exception
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddWeight(viewModel: WeightViewModel) {
+fun AddWeight(viewModel: WeightViewModel, navController: NavController) {
     // Variables for getting the current date
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
@@ -50,7 +40,7 @@ fun AddWeight(viewModel: WeightViewModel) {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
     var weight by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("$day/$month/$year") }
+    var date by remember { mutableStateOf("$day.$month.$year") }
     var showDatePicker = viewModel.openPopUp.value
 
     // Check the viewModel's openPopUp value, if it's true show the DatePicker composable to the user
@@ -71,7 +61,7 @@ fun AddWeight(viewModel: WeightViewModel) {
         OutlinedTextField(
             value = weight,
             onValueChange = { weight = it },
-            label = { Text("Weight") }
+            label = { Text("Weight (kg)") }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -91,6 +81,44 @@ fun AddWeight(viewModel: WeightViewModel) {
                 )
             }
         }
-    }
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Button(
+                onClick = {
+                    navController.navigate("weightlist")
+                    val formattedDate = stringToDate(date)
+                    println(":DD $formattedDate")
+                    if (formattedDate != null) {
+                        println(":DDD not null")
+                        viewModel.addWeight(weight.toInt(), formattedDate)
+                    }
 
+                }
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                )
+                {
+                    Text("Add weight")
+                }
+            }
+        }
+    }
 }
+
+fun stringToDate(date: String): Date? {
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy")
+    val dateFromString: Date? = try {
+        dateFormat.parse(date)
+    } catch (e: Exception) {
+        println("error: $e")
+        null
+    }
+    return dateFromString
+}
+

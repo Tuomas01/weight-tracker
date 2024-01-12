@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface WeightDao {
@@ -12,7 +13,7 @@ interface WeightDao {
     fun getAll(): Flow<List<Weight>>
 
     @Query("UPDATE Weight SET weight = :weight, date = :date WHERE id = :id")
-    suspend fun updateSelectedWeight(weight: Int, date: Long, id: Int)
+    suspend fun updateSelectedWeight(weight: Int, date: Date, id: Int)
 
     @Insert
     suspend fun addNewWeight(weight: Weight)

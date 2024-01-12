@@ -14,7 +14,7 @@ fun Navigation(navController: NavHostController, viewModel: WeightViewModel) {
             WeightList(viewModel, navController)
         }
         composable("addweight") {
-            AddWeight(viewModel)
+            AddWeight(viewModel, navController)
         }
     }
 }
